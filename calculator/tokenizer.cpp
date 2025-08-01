@@ -1,26 +1,41 @@
 #include <iostream>
 #include "tokenizer.h"
 
+void Token::setNext(Token *nextToken) {
+	next = nextToken;
+	return;
+}
+
 void ValueToken::Print() const {
 	std::cout << "ValueToken: " << value << std::endl;
 }
 
+int ValueToken::getValue() const {
+	return value;
+}
+
 void OperatorToken::Print() const {
-	std::cout << "OperatorToken: " << op << std::endl;
+	std::cout << "OperatorToken: " << str << std::endl;
 }
 
-void BracketToken::Print() const {
-	char bracket = ')';
-	if (isOpening) {
-		bracket = '(';
+OperatorToken::OperatorToken(char op): NonValueToken(Operator, op) {
+	precedence = 2;
+	if (op == '*' || op == '/') {
+		precedence = 1;
 	}
-	std::cout << "BracketToken: " << bracket << std::endl;
 }
 
-BracketToken::BracketToken(char bracket) {
-	if (bracket == '(') {
-		isOpening = true;
-	} else {
-		isOpening = false;
-	}
+void OpeningBracketToken::Print() const {
+	std::cout << "OpeningBracketToken: (" << std::endl;
 }
+
+void ClosingBracketToken::Print() const {
+	std::cout << "ClosingBracketToken: )" << std::endl;
+}
+
+BracketToken::BracketToken(TokenType t): NonValueToken(t) {
+	precedence = 1;
+}
+OpeningBracketToken::OpeningBracketToken(): BracketToken(OpeningBracket) {}
+ClosingBracketToken::ClosingBracketToken(): BracketToken(ClosingBracket) {}
+
