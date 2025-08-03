@@ -10,62 +10,66 @@ enum TokenType {
 
 class Token {
 	public:
-		Token(TokenType t): t(t), str('0') {};
-		Token(TokenType t, int precedence): t(t), str('0'), precedence(precedence) {};
-		Token(TokenType t, char str): t(t), str(str) {};
-		virtual ~Token() {};
+		explicit Token(const TokenType t): t(t), str('0') {};
+		Token(const TokenType t, const int precedence): t(t), precedence(precedence), str('0') {};
+		Token(const TokenType t, const char str): t(t), str(str) {};
+		Token(const TokenType t, const char str, const int precedence): t(t), precedence(precedence), str(str) {};
+		virtual ~Token() = default;
 		TokenType t;
-		int precedence;
+		int precedence{};
 		char str;
 		virtual void Print() const = 0;
 		void setNext(Token *nextToken);
-		virtual int getValue() const {
+		void setPrecedence(int p) {
+			precedence = p;
+		}
+		[[nodiscard]] virtual double getValue() const {
 			return 0;
 		};
 	private:
-		Token *next;
+		Token *next{};
 };
-class ValueToken : public Token {
+class ValueToken final : public Token {
 	public:
-		ValueToken(double value): Token(Value, 3), value(value) {};
-		~ValueToken() override {};
+		explicit ValueToken(const double value): Token(Value, 0), value(value) {};
+		~ValueToken() override = default;
 		void Print() const override;
-		virtual int getValue() const override;
+		[[nodiscard]] double getValue() const override;
 	private:
 		double value;
 };
 
 class NonValueToken : public Token {
 	public:
-		NonValueToken(TokenType t): Token(t) {};
-		NonValueToken(TokenType t, char str): Token(t, str) {};
-		virtual ~NonValueToken() {};
-		virtual void Print() const = 0;
+		explicit NonValueToken(const TokenType t): Token(t) {};
+		NonValueToken(const TokenType t, const char str): Token(t, str) {};
+		~NonValueToken() override = default;
+		void Print() const override = 0;
 };
-class OperatorToken : public NonValueToken {
+class OperatorToken final : public NonValueToken {
 	public:
-		OperatorToken(char op);
-		~OperatorToken() override {};
+		explicit OperatorToken(char op);
+		~OperatorToken() override = default;
 		void Print() const override;
 };
 
 class BracketToken : public NonValueToken {
 	public:
-		BracketToken(TokenType t);
-		virtual ~BracketToken() override {};
-		virtual void Print() const = 0;
+		explicit BracketToken(TokenType t);
+		~BracketToken() override = default;
+		void Print() const override = 0;
 };
 
-class OpeningBracketToken : public BracketToken {
+class OpeningBracketToken final : public BracketToken {
 	public:
 		OpeningBracketToken();
-		~OpeningBracketToken() override {};
+		~OpeningBracketToken() override = default;
 		void Print() const override;
 };
-class ClosingBracketToken : public BracketToken {
+class ClosingBracketToken final : public BracketToken {
 	public:
 		ClosingBracketToken();
-		~ClosingBracketToken() override {};
+		~ClosingBracketToken() override = default;
 		void Print() const override;
 };
 #endif

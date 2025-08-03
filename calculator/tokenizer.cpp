@@ -3,14 +3,13 @@
 
 void Token::setNext(Token *nextToken) {
 	next = nextToken;
-	return;
 }
 
 void ValueToken::Print() const {
 	std::cout << "ValueToken: " << value << std::endl;
 }
 
-int ValueToken::getValue() const {
+double ValueToken::getValue() const {
 	return value;
 }
 
@@ -18,10 +17,10 @@ void OperatorToken::Print() const {
 	std::cout << "OperatorToken: " << str << std::endl;
 }
 
-OperatorToken::OperatorToken(char op): NonValueToken(Operator, op) {
-	precedence = 2;
+OperatorToken::OperatorToken(const char op): NonValueToken(Operator, op) {
+	precedence = 1;
 	if (op == '*' || op == '/') {
-		precedence = 1;
+		precedence = 2;
 	}
 }
 
@@ -33,8 +32,8 @@ void ClosingBracketToken::Print() const {
 	std::cout << "ClosingBracketToken: )" << std::endl;
 }
 
-BracketToken::BracketToken(TokenType t): NonValueToken(t) {
-	precedence = 1;
+BracketToken::BracketToken(const TokenType t): NonValueToken(t) {
+	precedence = 0;
 }
 OpeningBracketToken::OpeningBracketToken(): BracketToken(OpeningBracket) {}
 ClosingBracketToken::ClosingBracketToken(): BracketToken(ClosingBracket) {}

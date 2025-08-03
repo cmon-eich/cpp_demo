@@ -8,11 +8,4 @@ bool isOperator(char op) {
 	return false;
 }
 
-bool isBracket(char bracket) {
-	if (bracket == '(' || bracket == ')') {
-		return true;
-	}
-	return false;
-}
-
 #endif
