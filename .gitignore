@@ -41,3 +41,7 @@
 *.dwo
 
 *.swp
+
+.idea/*
+playground/rValRef.cpp
+calculator/build/*

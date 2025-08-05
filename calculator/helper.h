@@ -1,7 +1,7 @@
 #ifndef helper
 #define helper
 
-bool isOperator(char op) {
+bool isOperator(const char op) {
 	if (op == '+' || op == '-' || op == '*' || op == '/') {
 		return true;
 	}
