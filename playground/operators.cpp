@@ -104,7 +104,7 @@ int main() {
     auto z = Measure(14.55, Millimeters);
     std::cout << "This programm is about measures." << std::endl
     << "For measures like:" << std::endl << "x = " << x << std::endl << "y = " << y << std::endl << "z = " << z << std::endl
-    << "It is supposed to calculate theire cube: " << x*y*z << std::endl;
+    << "It is supposed to calculate their cube: " << x*y*z << std::endl;
 
     // interactive part
     long double length;

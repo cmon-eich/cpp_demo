@@ -12,6 +12,7 @@ On the project structure:
   - BUT it was a great chance to refresh my debugging-skills
 - **playground**: Contains unrelated but executable snippets on issues dug into deeper while
 refreshing my memory.
+  - _operators_: yeah, one would not have redundant information like m and mm in a class.
 - **measurements**: is my attempt on a library for measures. 
 By now I do not really know where I am headed with this. 
 
