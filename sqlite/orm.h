@@ -91,8 +91,9 @@ struct Table {
     Table(const std::filesystem::path &dbPath, const std::string &name, const HeaderRow &header): name(name), header(header), dbFile(dbPath) {}
     Table(const std::string &name, const HeaderRow &header): name(name), header(header), dbFile(std::filesystem::current_path() / ".." / "data.db") {}
 
-    int select(SelectConfig config);
-    int update(UpdateConfig config) const;
+    int select(const SelectConfig &config);
+    int update(const UpdateConfig &config) const;
+    int insert(const InsertConfig &config) const;
 };
 
 #endif //CPP_DEMO_ORM_H

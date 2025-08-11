@@ -8,7 +8,7 @@ std::map<ColumnType, DB_Func> Column::selectFuncs = {
 };
 
 
-int Table::select(SelectConfig config) {
+int Table::select(const SelectConfig &config) {
     sqlite3* db;
     sqlite3_stmt* stmt;
     int rc = sqlite3_open(dbFile.c_str(), &db);
@@ -65,7 +65,7 @@ int Table::select(SelectConfig config) {
     return 0;
 }
 
-int Table::update(UpdateConfig config) const {
+int Table::update(const UpdateConfig &config) const {
     if (config.set.size() < 1) {
         throw std::invalid_argument("update-statement with nothing to update");
     }
@@ -130,6 +130,73 @@ int Table::update(UpdateConfig config) const {
         std::cerr << "Execution failed: " << sqlite3_errmsg(db) << std::endl;
     }
 
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+    return 0;
+}
+
+int Table::insert(const InsertConfig &config) const {
+    if (config.columns.size() < 1 || config.data.size() < 1) {
+        throw std::invalid_argument("insert-statement with nothing to insert");
+    }
+    sqlite3* db;
+    sqlite3_stmt* stmt;
+    if (const int rc = sqlite3_open(dbFile.c_str(), &db); rc != SQLITE_OK) {
+        std::cerr << "Can't open database: " << sqlite3_errmsg(db) << std::endl;
+        return 1;
+    }
+
+    std::string sql = "INSERT INTO "+name+" (";
+    std::string valPart = ") VALUES (";
+    for (const auto col : config.columns) {
+        sql += col.name + ",";
+        valPart += "?,";
+    }
+    sql.pop_back();
+    valPart.pop_back();
+    sql += valPart + ")";;
+
+    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_close(db);
+        return 1;
+    }
+
+    for (const auto& row : config.data) {
+        if (row.size() != config.columns.size()) {
+            sqlite3_finalize(stmt);
+            sqlite3_close(db);
+            throw std::invalid_argument("size of data about to be inserted have to match the size of columns");
+        }
+        int bindPos = 1;
+        for (const auto& val : row) {
+            switch (val.index()) {
+                // maybe referring to the real indexes (0,1,2) would be better here
+                case Integer:
+                    bindInt(stmt, bindPos, val);
+                    bindPos++;
+                    break;
+                case Real:
+                    bindDouble(stmt, bindPos, val);
+                    bindPos++;
+                    break;
+                case Text:
+                    bindString(stmt, bindPos, val);
+                    bindPos++;
+                    break;
+                default:
+                    sqlite3_finalize(stmt);
+                    sqlite3_close(db);
+                    throw std::invalid_argument("Column type not supported");
+            }
+        }
+
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            std::cerr << "Insert failed: " << sqlite3_errmsg(db) << std::endl;
+        }
+        sqlite3_reset(stmt);
+        sqlite3_clear_bindings(stmt);
+    }
     sqlite3_finalize(stmt);
     sqlite3_close(db);
     return 0;

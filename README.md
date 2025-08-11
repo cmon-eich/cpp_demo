@@ -13,8 +13,12 @@ On the project structure:
 - **playground**: Contains unrelated but executable snippets on issues dug into deeper while
 refreshing my memory.
   - _operators_: yeah, one would not have redundant information like m and mm in a class.
-- **measurements**: is my attempt on a library for measures. 
-By now I do not really know where I am headed with this. 
+  - _structs_: as simple as it looks
+  - _variadic_: there are many ways to implement them
+- **measurements**: is my attempt on a library for measures.
+  By now I do not really know where I am headed with this.
+- **sqlite**: is my attempt on an object relational mapper. Due to lack of time the ORM is very slimmed down and prone to errors.
+
 
 
 **PS**: Why are there so little comments?  
