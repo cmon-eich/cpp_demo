@@ -1,13 +1,16 @@
 cmake_minimum_required(VERSION 4.0)
-project(Sqlite)
+project(ORM)
 
 # C++ Standard setzen
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Alle Quellcode-Dateien
-add_executable(Sqlite
-        sqlite.cpp
+add_executable(ORM
+        orm_types.cpp
+        orm_basics.cpp
+        orm_table.cpp
+        orm.cpp
 )
 
-target_link_libraries(Sqlite sqlite3)
+target_link_libraries(ORM sqlite3)
