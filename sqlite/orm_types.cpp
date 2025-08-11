@@ -7,3 +7,13 @@ std::string HeaderRow::getNames() const  {
     }
     return result;
 }
+
+
+ColumnType HeaderRow::getColumnType(const std::string &name) const {
+    for (auto col : headers) {
+        if (col.name == name) {
+            return col.type;
+        }
+    }
+    throw std::runtime_error("Column not found");
+}

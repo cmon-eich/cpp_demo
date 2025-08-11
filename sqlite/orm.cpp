@@ -27,4 +27,15 @@ int main() {
         }
         std::cout << std::endl;
     }
+    tbl.update({
+        "n1=46",
+        std::vector<UpdateSet>({{"n1", 56}})
+    });
+    tbl.select({"n1>20", 10, 0});
+    for (auto row : tbl.rows) {
+        for (auto col : row) {
+            std::cout << std::setw(5) << std::right << col;
+        }
+        std::cout << std::endl;
+    }
 }

@@ -8,6 +8,8 @@
 #include <vector>
 #include <sqlite3.h>
 
+struct Column;
+
 enum ColumnType {
     Integer,
     Real,
@@ -25,27 +27,31 @@ DB_Type getInt(sqlite3_stmt* stmt, int col);
 DB_Type getDouble(sqlite3_stmt* stmt, int col);
 DB_Type getString(sqlite3_stmt* stmt, int col);
 
+
+int bindInt(sqlite3_stmt* stmt, int bindIndex, const DB_Type &newValue);
+int bindDouble(sqlite3_stmt* stmt, int bindIndex, const DB_Type &newValue);
+int bindString(sqlite3_stmt* stmt, int bindIndex, const DB_Type &newValue);
+
 /*
  * ORM query building blocks
  */
-
-struct WhereCondition {
-    std::string colName;
-    std::string comparator;
-    std::string compValue;
-};
-
-struct WhereClause {
-
-};
 
 struct SelectConfig {
     std::string whereClause = "";  // yeah, using a string here is really ugly, but make it work first, make it nice later.
     int limit = 0;
     int offset = 0;
 };
+struct UpdateSet {
+    std::string ColumnName;
+    DB_Type NewValue;
+};
 struct UpdateConfig {
     std::string whereClause = "";
+    std::vector<UpdateSet> set;
+};
+struct InsertConfig {
+    std::vector<Column> columns;
+    std::vector<std::vector<DB_Type>> data;
 };
 
 /*
@@ -56,7 +62,8 @@ struct Column {
     static std::map<ColumnType, DB_Func> selectFuncs;
     std::string name;
     ColumnType type;
-    Column(const std::string &name, const ColumnType type): name(name), type(type) {};
+    bool mandatory; // for inserts
+    Column(const std::string &name, const ColumnType type) : name(name), type(type), mandatory(false) {};
 };
 
 struct IntCol : Column {
@@ -72,6 +79,7 @@ struct TextCol : Column {
 struct HeaderRow {
     std::vector<Column> headers;
     std::string getNames() const;
+    ColumnType getColumnType(const std::string &name) const;
 };
 
 struct Table {
@@ -84,7 +92,7 @@ struct Table {
     Table(const std::string &name, const HeaderRow &header): name(name), header(header), dbFile(std::filesystem::current_path() / ".." / "data.db") {}
 
     int select(SelectConfig config);
-    int update(UpdateConfig config);
+    int update(UpdateConfig config) const;
 };
 
 #endif //CPP_DEMO_ORM_H
